@@ -1,0 +1,23 @@
+# Archivos de entorno y credenciales sensibles
+.env
+.env.local
+*.env
+
+# SQLite local temporal
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
