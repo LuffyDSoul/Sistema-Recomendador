@@ -138,7 +138,7 @@ END $$;
 -- Políticas de acceso completo para service_role (Carga y Backend)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service role total access all') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service role total access all libros') THEN
         CREATE POLICY "Service role total access all libros" ON "Libro" FOR ALL USING (true);
         CREATE POLICY "Service role total access all autores" ON "Autor" FOR ALL USING (true);
         CREATE POLICY "Service role total access all editoriales" ON "Editorial" FOR ALL USING (true);

@@ -6,7 +6,7 @@ Este documento describe el conjunto de datos integrado en el proyecto y la estra
 
 ## 1. El Dataset Integrado (100 Libros Reales)
 
-Todos los registros fueron extraídos fielmente del notebook original del Trabajo Práctico Integrador y residen de forma canónica en [`src/infrastructure/data/seed_data.py`](file:///c:/Users/Pablo%20Leal/Documents/Github/Sistema-Recomendador/src/infrastructure/data/seed_data.py).
+Todos los registros fueron extraídos fielmente del notebook original del Trabajo Práctico Integrador y residen de forma canónica en [`src/infrastructure/data/seed_data.py`](../src/infrastructure/data/seed_data.py).
 
 ### Resumen Cuantitativo
 | Colección | Cantidad | Descripción |
@@ -41,19 +41,19 @@ flowchart TD
     
     Onboarding -- No (0 géneros) --> PopularityRank[Recomendar catálogo general / Más populares]
     
-    ContentRank --> FeedDTO[LibroRecomendadoDTO entregado al frontend]
-    PopularityRank --> FeedDTO
+    ContentRank --> Feed[Libros recomendados]
+    PopularityRank --> Feed
 ```
 
 1. **Onboarding Temático (`UsuarioGenero`):** Al registrarse, el usuario selecciona hasta 3 géneros de su preferencia (invariante $0..3$).
-2. **Recomendación Basada en Contenido:** El caso de uso [`ColdStartRecommendationUseCase`](file:///c:/Users/Pablo%20Leal/Documents/Github/Sistema-Recomendador/src/application/use_cases/cold_start_recommendation_use_case.py) recupera los libros clasificados bajo esos géneros (`GeneroLibro`) y entrega recomendaciones personalizadas desde el segundo cero.
-3. **Fallback por Catálogo:** Si el usuario decide omitir el onboarding ($0$ géneros seleccionados), el recomendador entrega una selección balanceada del catálogo general.
+2. **Recomendación Basada en Contenido:** La función `recomendar()` de [`src/supabase_operations.py`](../src/supabase_operations.py) recupera los libros clasificados bajo esos géneros (`GeneroLibro`) y entrega recomendaciones personalizadas desde el segundo cero.
+3. **Fallback por Catálogo:** Si el usuario decide omitir el onboarding ($0$ géneros seleccionados), `recomendar()` entrega una selección del catálogo general.
 
 ---
 
 ## 3. Feedback Explícito vs. Implícito (`Preferencia`)
 
-La entidad `Preferencia` y su Value Object `Rating` permiten alimentar el modelo a medida que el usuario interactúa con la plataforma:
+La tabla `Preferencia` permite alimentar el modelo a medida que el usuario interactúa con la plataforma:
 
 * **Feedback Explícito:** Calificación voluntaria en estrellas ($1, 2, 3, 4, 5$). Modela preferencias directas del usuario.
 * **Feedback Implícito:** Evento de click, vista de ficha de libro o tiempo de lectura donde `rating = None`. En ciencia de datos, estas interacciones se convierten en señales de confianza binarias o ponderadas para refinar el filtrado colaborativo una vez superada la fase de Cold Start.
@@ -67,6 +67,13 @@ Si deseas limpiar las tablas y reinyectar todos los datos limpios:
 ```powershell
 py seed.py --reset
 ```
+
+### Reiniciar solo las preferencias de usuarios existentes
+Para borrar las relaciones de géneros y compras de los usuarios actuales y volver a generarlas:
+```powershell
+py .\seed_preferencias.py --reset-preferencias
+```
+El usuario `emilianolanaro@gmail.com` queda sin compras para probar el caso Cold Start. Usar este comando solo con datos de prueba.
 
 ### Ejecutar Caso de Uso de Recomendaciones
 Para ejecutar el recomendador y observar cómo se calculan las recomendaciones de Cold Start para un usuario en vivo:

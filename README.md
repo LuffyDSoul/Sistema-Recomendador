@@ -15,16 +15,18 @@ Sistema-Recomendador/
 ├── example.env.txt                   # Plantilla de variables de entorno requeridas
 ├── schema_supabase.sql               # Script DDL oficial para el SQL Editor de Supabase
 ├── seed.py                           # Script de inyección inicial y mantenimiento de datos
-├── main.py                           # Orquestador y demostración de Casos de Uso
+├── seed_preferencias.py              # Compras y ratings para usuarios existentes
+├── main.py                           # Ejecución de recomendaciones y preferencias
 ├── docs/                             # Documentación técnica modular
 │   ├── 01_DATABASE_SCHEMA.md         # Modelo relacional, tablas, triggers y RLS
-│   └── 03_SEED_DATA_AND_COLD_START.md # Dataset de 100 libros y solución al Cold Start
+│   ├── 02_SEED_DATA_AND_COLD_START.md # Dataset de 100 libros y solución al Cold Start
+│   └── 03_SETUP_AND_EXECUTION.md     # Instalación y ejecución del proyecto
 └── src/
-   ├── supabase_operations.py        # Seed, recomendaciones y preferencias
+   ├── supabase_operations.py       # Seed, recomendaciones y preferencias
    └── infrastructure/
-      ├── config.py                 # Cargador de variables de entorno
-      ├── data/seed_data.py         # 100 libros, autores, editoriales y usuarios reales
-      └── supabase/client.py        # Cliente HTTP para la API REST de Supabase
+      ├── config.py                # Cargador de variables de entorno
+      ├── data/seed_data.py        # Libros, autores, editoriales y usuarios semilla
+      └── supabase/client.py       # Cliente HTTP para la API REST de Supabase
 ```
 
 ---
@@ -32,10 +34,10 @@ Sistema-Recomendador/
 ## ⚡ Guía Rápida de Puesta en Marcha
 
 ### 1. Configurar Variables de Entorno
-Copia la plantilla `example.env.txt` como `.env` e ingresa tu URL y API Key de Supabase:
+Copia la plantilla `example.env.txt` como `.env` e ingresa tu URL y clave `service_role` de Supabase:
 ```env
 SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_KEY=tu-service-role-key-aqui
+SUPABASE_KEY=tu-service-role-key
 ```
 
 ### 2. Crear las Tablas en Supabase
@@ -45,7 +47,7 @@ Copia el contenido de [`schema_supabase.sql`](schema_supabase.sql) y ejecútalo 
 * Los índices de rendimiento para consultas del recomendador.
 * Las políticas de seguridad de fila (**RLS**).
 
-### 3. Inyectar los Datos Semilla (100 Libros Reales)
+### 3. Inyectar los Datos Semilla
 Ejecuta el script dedicado de inyección de datos:
 ```powershell
 py seed.py
@@ -55,15 +57,24 @@ py seed.py
 > py seed.py --reset
 > ```
 
-### 4. Probar los Casos de Uso del Recomendador
+Para cargar compras y ratings sobre los usuarios que ya existen en la base:
+```powershell
+py seed_preferencias.py
+```
+Para regenerar también sus géneros favoritos:
+```powershell
+py .\seed_preferencias.py --reset-preferencias
+```
+
+### 4. Ejecutar el Recomendador
 Ejecuta el orquestador principal:
 ```powershell
 py main.py
 ```
-Este comando ejecutará los casos de uso:
+Este comando ejecutará el flujo principal:
 1. Verificación del catálogo.
-2. Cálculo de recomendaciones para **Cold Start** (usuarios nuevos según onboarding).
-3. Registro de feedback explícito (calificación 1 a 5) e implícito (clicks/navegación).
+2. Cálculo de recomendaciones para **Cold Start** según los géneros favoritos del usuario.
+3. Registro de feedback explícito (calificación de 1 a 5) e implícito (click o vista).
 
 ---
 
@@ -75,9 +86,9 @@ Para profundizar en cada componente técnico, consulta la documentación modular
    * Modelo relacional derivado del diagrama UML `pkg`.
    * Enforzamiento de invariantes a nivel de base de datos (PostgreSQL PL/pgSQL).
    * Índices de rendimiento para filtrado colaborativo.
-2. [**Dataset Semilla y Mitigación de Cold Start (`docs/03_SEED_DATA_AND_COLD_START.md`)**](docs/03_SEED_DATA_AND_COLD_START.md):
+2. [**Dataset Semilla y Mitigación de Cold Start (`docs/02_SEED_DATA_AND_COLD_START.md`)**](docs/02_SEED_DATA_AND_COLD_START.md):
    * Catálogo canónico de 100 libros con autores, páginas y precios reales.
    * Estrategia algorítmica para el arranque en frío mediante onboarding temático.
-3. [**Guía de Instalación y Ejecución (`docs/04_SETUP_AND_EXECUTION.md`)**](docs/04_SETUP_AND_EXECUTION.md):
+3. [**Guía de Instalación y Ejecución (`docs/03_SETUP_AND_EXECUTION.md`)**](docs/03_SETUP_AND_EXECUTION.md):
    * Configuración de Supabase, variables de entorno y ejecución del esquema.
    * Carga de datos, ejecución del programa y reinicio del catálogo.

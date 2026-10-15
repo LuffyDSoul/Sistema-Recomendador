@@ -64,7 +64,25 @@ El script carga:
 
 Si el catálogo ya tiene 100 libros, la carga se omite para evitar duplicados.
 
-## 6. Ejecutar la demostración
+## 6. Cargar compras para usuarios existentes
+
+Si no se quieren crear usuarios demo nuevos, usar el script independiente:
+
+```powershell
+py seed_preferencias.py
+```
+
+Este script toma los usuarios que ya existen en la tabla `Usuario`, conserva sus géneros favoritos y agrega 7 u 8 compras nuevas por ejecución. En aproximadamente el 5% de los casos genera 10 compras. No crea usuarios nuevos ni repite libros que ya tengan registrados en `Preferencia`.
+
+Para reiniciar las preferencias de género y las compras de todos los usuarios existentes:
+
+```powershell
+py .\seed_preferencias.py --reset-preferencias
+```
+
+En ambos modos, `emilianolanaro@gmail.com` queda siempre sin compras para probar el caso Cold Start. El modo `--reset-preferencias` además reemplaza sus géneros favoritos y las compras de todos los usuarios. Debe usarse solo con datos de prueba.
+
+## 7. Ejecutar la demostración
 
 ```powershell
 py main.py
@@ -77,7 +95,7 @@ El programa:
 3. Registra una preferencia explícita con rating 5.
 4. Registra una interacción implícita sin rating.
 
-## 7. Reiniciar los datos
+## 8. Reiniciar los datos
 
 Para borrar los datos de las tablas y cargar nuevamente todo el catálogo:
 
@@ -87,7 +105,7 @@ py seed.py --reset
 
 Este comando debe usarse únicamente en un entorno de desarrollo o prueba, porque elimina los datos existentes.
 
-## 8. Solución de problemas
+## 9. Solución de problemas
 
 ### Faltan las variables de entorno
 

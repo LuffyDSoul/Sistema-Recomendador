@@ -56,7 +56,10 @@ def main():
 
     # 5. Verificación Final de Estado
     logger.info("\n--- [RESUMEN DE REGISTROS EN SUPABASE] ---")
-    tablas = ["Genero", "Editorial", "Autor", "Libro", "GeneroLibro", "Usuario", "UsuarioGenero"]
+    tablas = [
+        "Genero", "Editorial", "Autor", "Libro", "GeneroLibro",
+        "Usuario", "UsuarioGenero", "Preferencia",
+    ]
     for t in tablas:
         data = client.select(t, "select=*")
         print(f"  * Tabla '{t}': {len(data)} registros cargados.")
