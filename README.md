@@ -2,13 +2,11 @@
 
 Repositorio del Trabajo Práctico Integrador de la materia **Ciencia de Datos** de la **UTN Facultad Regional de Concepción del Uruguay**.
 
-Este proyecto implementa la arquitectura de datos y el motor de recomendación para una tienda virtual de libros con un **catálogo cerrado de exactamente 100 títulos**, diseñado con **Domain-Driven Design (DDD)** y persistido en la nube mediante **Supabase (PostgreSQL)**.
+Este proyecto implementa la arquitectura de datos y el motor de recomendación para una tienda virtual de libros con un **catálogo cerrado de exactamente 100 títulos**, persistido en la nube mediante **Supabase (PostgreSQL)**.
 
 ---
 
-## 🏗️ Arquitectura del Repositorio
-
-El proyecto está organizado bajo los principios de **Domain-Driven Design (DDD)** y **Clean Architecture**:
+## 🏗️ Estructura del Repositorio
 
 ```text
 Sistema-Recomendador/
@@ -20,19 +18,13 @@ Sistema-Recomendador/
 ├── main.py                           # Orquestador y demostración de Casos de Uso
 ├── docs/                             # Documentación técnica modular
 │   ├── 01_DATABASE_SCHEMA.md         # Modelo relacional, tablas, triggers y RLS
-│   ├── 02_DDD_ARCHITECTURE.md        # Capas de Dominio, Aplicación e Infraestructura
 │   └── 03_SEED_DATA_AND_COLD_START.md # Dataset de 100 libros y solución al Cold Start
 └── src/
-    ├── domain/                       # Core de Negocio (Entidades, Value Objects, Repositorios)
-    │   ├── entities/                 # Libro (1..100), Usuario (0..3 géneros), Preferencia, etc.
-    │   ├── value_objects/            # Rating (1..5 o None), Email
-    │   ├── exceptions.py             # Excepciones de invariantes de dominio
-    │   └── repositories/             # Interfaces abstractas (IoC)
-    ├── application/                  # Casos de Uso (Seed, ColdStart, Preferencias) y DTOs
-    └── infrastructure/               # Adaptadores técnicos (SupabaseClient, Repositorios, Datos)
-        ├── config.py                 # Cargador tipado de configuración
-        ├── data/seed_data.py         # 100 libros, autores, editoriales y usuarios reales
-        └── repositories/             # Implementaciones concretas de repositorios con Supabase
+   ├── supabase_operations.py        # Seed, recomendaciones y preferencias
+   └── infrastructure/
+      ├── config.py                 # Cargador de variables de entorno
+      ├── data/seed_data.py         # 100 libros, autores, editoriales y usuarios reales
+      └── supabase/client.py        # Cliente HTTP para la API REST de Supabase
 ```
 
 ---
@@ -83,9 +75,9 @@ Para profundizar en cada componente técnico, consulta la documentación modular
    * Modelo relacional derivado del diagrama UML `pkg`.
    * Enforzamiento de invariantes a nivel de base de datos (PostgreSQL PL/pgSQL).
    * Índices de rendimiento para filtrado colaborativo.
-2. [**Arquitectura Orientada al Dominio (`docs/02_DDD_ARCHITECTURE.md`)**](docs/02_DDD_ARCHITECTURE.md):
-   * Detalle de las 4 capas: Dominio, Aplicación, Infraestructura y Presentación.
-   * Entidades, Aggregates, Value Objects y Contratos de Repositorios (Inversión de Control).
-3. [**Dataset Semilla y Mitigación de Cold Start (`docs/03_SEED_DATA_AND_COLD_START.md`)**](docs/03_SEED_DATA_AND_COLD_START.md):
+2. [**Dataset Semilla y Mitigación de Cold Start (`docs/03_SEED_DATA_AND_COLD_START.md`)**](docs/03_SEED_DATA_AND_COLD_START.md):
    * Catálogo canónico de 100 libros con autores, páginas y precios reales.
    * Estrategia algorítmica para el arranque en frío mediante onboarding temático.
+3. [**Guía de Instalación y Ejecución (`docs/04_SETUP_AND_EXECUTION.md`)**](docs/04_SETUP_AND_EXECUTION.md):
+   * Configuración de Supabase, variables de entorno y ejecución del esquema.
+   * Carga de datos, ejecución del programa y reinicio del catálogo.

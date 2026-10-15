@@ -1,21 +1,10 @@
-"""
-Script de Inyección Inicial de Datos (Data Seeding)
-Arquitectura: Domain-Driven Design (DDD)
-Carga los 12 géneros, 9 editoriales, 18 autores, 100 libros exactos, 20 usuarios y sus preferencias.
-"""
+"""Carga y mantenimiento de los datos iniciales en Supabase."""
 
 import sys
 import logging
 from src.infrastructure.config import AppConfig
 from src.infrastructure.supabase.client import SupabaseClient
-from src.infrastructure.repositories.supabase_repositories import (
-    SupabaseGeneroRepository,
-    SupabaseEditorialRepository,
-    SupabaseAutorRepository,
-    SupabaseLibroRepository,
-    SupabaseUsuarioRepository
-)
-from src.application.use_cases.seed_data_use_case import SeedDataUseCase
+from src.supabase_operations import cargar_datos
 
 # Configuración de Logging
 logging.basicConfig(
@@ -51,7 +40,7 @@ def main():
     force_reload = "--reset" in sys.argv or "-r" in sys.argv
 
     logger.info("================================================================")
-    logger.info("  INICIANDO INYECCIÓN INICIAL DE DATOS EN SUPABASE (DDD)        ")
+    logger.info("  INICIANDO INYECCIÓN INICIAL DE DATOS EN SUPABASE              ")
     logger.info("================================================================")
 
     # 1. Configuración y Cliente
@@ -62,24 +51,8 @@ def main():
     if force_reload:
         limpiar_base_de_datos(client)
 
-    # 2. Instanciación de Repositorios (Infrastructure)
-    genero_repo = SupabaseGeneroRepository(client)
-    editorial_repo = SupabaseEditorialRepository(client)
-    autor_repo = SupabaseAutorRepository(client)
-    libro_repo = SupabaseLibroRepository(client)
-    usuario_repo = SupabaseUsuarioRepository(client)
-
-    # 3. Caso de Uso (Application)
-    seed_use_case = SeedDataUseCase(
-        genero_repo=genero_repo,
-        editorial_repo=editorial_repo,
-        autor_repo=autor_repo,
-        libro_repo=libro_repo,
-        usuario_repo=usuario_repo
-    )
-
-    # 4. Ejecución
-    seed_use_case.execute(force_reload=force_reload)
+    # Carga directa del catálogo y los usuarios.
+    cargar_datos(client, force_reload=force_reload)
 
     # 5. Verificación Final de Estado
     logger.info("\n--- [RESUMEN DE REGISTROS EN SUPABASE] ---")
