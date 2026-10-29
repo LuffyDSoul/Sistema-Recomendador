@@ -16,13 +16,21 @@ Sistema-Recomendador/
 ├── schema_supabase.sql               # Script DDL oficial para el SQL Editor de Supabase
 ├── seed.py                           # Script de inyección inicial y mantenimiento de datos
 ├── seed_preferencias.py              # Compras y ratings para usuarios existentes
-├── main.py                           # Ejecución de recomendaciones y preferencias
+├── main.py                           # Demostración del pipeline híbrido (Modelo 1 y Modelo 2)
+├── api.py                            # Servidor HTTP de la API REST (http://127.0.0.1:8000)
 ├── docs/                             # Documentación técnica modular
 │   ├── 01_DATABASE_SCHEMA.md         # Modelo relacional, tablas, triggers y RLS
 │   ├── 02_SEED_DATA_AND_COLD_START.md # Dataset de 100 libros y solución al Cold Start
-│   └── 03_SETUP_AND_EXECUTION.md     # Instalación y ejecución del proyecto
+│   ├── 03_SETUP_AND_EXECUTION.md     # Instalación y ejecución del proyecto
+│   └── 04_MODELADO_Y_API_REST.md     # Fase 4: Modelos Híbridos, Endpoints y URLs de prueba
 └── src/
-   ├── supabase_operations.py       # Seed, recomendaciones y preferencias
+   ├── supabase_operations.py         # Seed, recomendaciones y preferencias
+   ├── api/
+   │   └── server.py                  # Controlador y servidor REST (GET/POST JSON)
+   ├── models/
+   │   ├── item_based_cf.py           # Modelo 1: Item-Based CF (Matriz 100x100 + Coseno)
+   │   ├── cold_start.py              # Modelo 2: Contenido y Popularidad (Caso A y Caso B)
+   │   └── hybrid_pipeline.py         # Pipeline de ensamblado y decisión híbrida
    └── infrastructure/
       ├── config.py                # Cargador de variables de entorno
       ├── data/seed_data.py        # Libros, autores, editoriales y usuarios semilla
@@ -66,15 +74,16 @@ Para regenerar también sus géneros favoritos:
 py .\seed_preferencias.py --reset-preferencias
 ```
 
-### 4. Ejecutar el Recomendador
-Ejecuta el orquestador principal:
+### 4. Ejecutar el Recomendador o la API REST
+Para ejecutar la demostración por consola de los dos modelos híbridos:
 ```powershell
 py main.py
 ```
-Este comando ejecutará el flujo principal:
-1. Verificación del catálogo.
-2. Cálculo de recomendaciones para **Cold Start** según los géneros favoritos del usuario.
-3. Registro de feedback explícito (calificación de 1 a 5) e implícito (click o vista).
+
+Para levantar el servidor de la **API REST** en `http://127.0.0.1:8000`:
+```powershell
+py api.py
+```
 
 ---
 
@@ -92,3 +101,6 @@ Para profundizar en cada componente técnico, consulta la documentación modular
 3. [**Guía de Instalación y Ejecución (`docs/03_SETUP_AND_EXECUTION.md`)**](docs/03_SETUP_AND_EXECUTION.md):
    * Configuración de Supabase, variables de entorno y ejecución del esquema.
    * Carga de datos, ejecución del programa y reinicio del catálogo.
+4. [**Fase 4: Modelado Híbrido y API REST (`docs/04_MODELADO_Y_API_REST.md`)**](docs/04_MODELADO_Y_API_REST.md):
+   * Implementación del **Modelo 1 (Item-Based CF $100 \times 100$)** y **Modelo 2 (Cold Start: Contenido + Popularidad)**.
+   * Listado completo de endpoints HTTP (`GET` y `POST`) y URLs listas para probar.
